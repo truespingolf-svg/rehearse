@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#090909" />
+  <title>RehearseFlow — Worship Rehearsal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">RF</div>
+        <div>
+          <div class="brand-name">RehearseFlow</div>
+          <div class="brand-sub">Worship rehearsal</div>
+        </div>
+      </div>
+      <button class="nav active" data-page="library">Library</button>
+      <button class="nav" data-page="setup">Add Song</button>
+      <button class="nav" data-page="practice">Practice</button>
+      <div class="sidebar-bottom">
+        <div class="status-dot"></div>
+        <span>Local-first rehearsal</span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow" id="eyebrow">REHEARSAL LIBRARY</div>
+          <h1 id="pageTitle">Your Songs</h1>
+        </div>
+        <div class="top-actions">
+          <button class="ghost" id="demoBtn">Load example</button>
+          <button class="primary" id="headerAdd">+ Add song</button>
+        </div>
+      </header>
+
+      <section id="libraryPage" class="page active">
+        <div id="libraryEmpty" class="empty-card">
+          <div class="empty-icon">♪</div>
+          <h2>Build your rehearsal library</h2>
+          <p>Add a YouTube song, upload the chord chart you have permission to use, and RehearseFlow will turn it into a playable practice arrangement.</p>
+          <button class="primary big" id="emptyAdd">Create your first song</button>
+        </div>
+        <div id="songGrid" class="song-grid"></div>
+      </section>
+
+      <section id="setupPage" class="page">
+        <div class="setup-grid">
+          <div class="card">
+            <div class="section-heading">
+              <div>
+                <div class="eyebrow">SONG SETUP</div>
+                <h2 id="setupHeading">Add a rehearsal song</h2>
+              </div>
+              <span class="pill">AI-assisted</span>
+            </div>
+            <div class="form-grid">
+              <label>
+                <span>Song title</span>
+                <input id="songTitle" placeholder="e.g. Goodness of God" />
+              </label>
+              <label>
+                <span>Artist / version</span>
+                <input id="songArtist" placeholder="e.g. Bethel Music" />
+              </label>
+              <label class="full">
+                <span>YouTube link</span>
+                <input id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=..." />
+              </label>
+              <label>
+                <span>BPM</span>
+                <input id="bpm" type="number" min="30" max="240" step="0.1" value="72" />
+              </label>
+              <label>
+                <span>Time signature</span>
+                <select id="timeSig">
+                  <option value="4/4">4/4</option>
+                  <option value="3/4">3/4</option>
+                  <option value="6/8">6/8</option>
+                  <option value="2/4">2/4</option>
+                </select>
+              </label>
+              <label class="full">
+                <span>Chord / lyric PDF</span>
+                <input id="pdfFile" type="file" accept=".pdf,application/pdf" />
+                <small>Use a chart you are licensed or otherwise permitted to use.</small>
+              </label>
+            </div>
+            <div class="button-row">
+              <button class="secondary" id="analyzeBtn">Analyze chart</button>
+              <button class="primary" id="saveSongBtn">Save song</button>
+            </div>
+            <div id="analysisStatus" class="analysis-status"></div>
+          </div>
+
+          <div class="card preview-card">
+            <div class="eyebrow">PLAYER PREVIEW</div>
+            <div id="setupPlayer" class="youtube-box">
+              <div class="player-placeholder">Paste a YouTube URL to load the player.</div>
+            </div>
+            <div class="mini-meta">
+              <span id="setupDuration">Duration —</span>
+              <span id="setupVideoTitle">Video —</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card editor-card" id="sectionEditorCard">
+          <div class="section-heading">
+            <div>
+              <div class="eyebrow">PRECISION SYNC</div>
+              <h2>Section timeline</h2>
+            </div>
+            <button class="secondary" id="autoPlaceBtn">Estimate timestamps</button>
+          </div>
+          <p class="muted">For accurate rehearsal timing, play the song and press <b>Set here</b> exactly when each section begins. This anchors the arrangement to the YouTube player's real timeline.</p>
+          <div id="sectionEditor" class="section-list"></div>
+        </div>
+      </section>
+
+      <section id="practicePage" class="page">
+        <div class="practice-layout">
+          <div class="practice-left">
+            <div class="video-card">
+              <div id="practicePlayer" class="youtube-box large"></div>
+              <div class="player-controls">
+                <button class="icon-btn" id="playPauseBtn">▶</button>
+                <div class="time-display"><span id="currentTime">0:00</span><span class="divider">/</span><span id="duration">0:00</span></div>
+                <div class="progress-wrap"><div id="progressBar" class="progress"></div></div>
+                <button class="ghost tiny" id="rewindBtn">−10</button>
+                <button class="ghost tiny" id="forwardBtn">+10</button>
+              </div>
+            </div>
+
+            <div class="card transport-card">
+              <div class="transport-grid">
+                <div>
+                  <div class="eyebrow">SECTION</div>
+                  <div id="currentSection" class="current-section">Ready</div>
+                  <div id="nextSection" class="muted">Next —</div>
+                </div>
+                <div>
+                  <div class="eyebrow">CLICK</div>
+                  <button id="clickToggle" class="toggle"><span class="toggle-knob"></span><span id="clickText">Click off</span></button>
+                </div>
+                <div>
+                  <div class="eyebrow">BPM</div>
+                  <div class="control-inline"><input id="practiceBpm" type="number" min="30" max="240" step="0.1"/><span>BPM</span></div>
+                </div>
+                <div>
+                  <div class="eyebrow">SPEED</div>
+                  <select id="speedSelect">
+                    <option value="0.5">0.5×</option>
+                    <option value="0.75">0.75×</option>
+                    <option value="0.9">0.9×</option>
+                    <option value="1" selected>1×</option>
+                    <option value="1.1">1.1×</option>
+                    <option value="1.25">1.25×</option>
+                  </select>
+                </div>
+              </div>
+              <div class="calibration-row">
+                <span>Beat offset: <b id="offsetValue">0.00s</b></span>
+                <input id="offsetRange" type="range" min="-2" max="2" step="0.01" value="0"/>
+                <button class="secondary tiny" id="tapBeatBtn">Tap downbeat</button>
+              </div>
+              <div class="countin-row">
+                <label><input type="checkbox" id="countinToggle" checked/> 2-bar count-in</label>
+                <label><input type="checkbox" id="autoScrollToggle" checked/> Auto-follow section</label>
+                <button class="secondary tiny" id="loopSectionBtn">Loop section</button>
+              </div>
+            </div>
+
+            <div class="card timeline-card">
+              <div class="eyebrow">ARRANGEMENT</div>
+              <div id="practiceTimeline" class="timeline"></div>
+            </div>
+          </div>
+
+          <aside class="practice-right">
+            <div class="card chord-card">
+              <div class="eyebrow">NOW PLAYING</div>
+              <h2 id="practiceTitle">—</h2>
+              <div id="practiceArtist" class="muted">—</div>
+              <div class="chord-stage">
+                <div id="activeChord" class="active-chord">—</div>
+                <div class="chord-label">CURRENT CHORD</div>
+              </div>
+              <div class="next-chord">
+                <div>
+                  <div class="eyebrow">NEXT</div>
+                  <strong id="nextChord">—</strong>
+                </div>
+                <div class="beat-count">
+                  <span id="beatNumber">1</span>
+                  <small>BEAT</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="card chart-card">
+              <div class="section-heading">
+                <div>
+                  <div class="eyebrow">CHART</div>
+                  <h3>Current section</h3>
+                </div>
+                <button class="ghost tiny" id="jumpPdfBtn">View PDF</button>
+              </div>
+              <pre id="chartText" class="chart-text">Add a song and analyze its chart.</pre>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <template id="songCardTemplate">
+    <article class="song-card">
+      <div class="song-art"><span>♪</span></div>
+      <div class="song-content">
+        <div class="song-title"></div>
+        <div class="song-artist"></div>
+        <div class="song-meta"></div>
+        <button class="primary open-song">Practice</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="app.js" defer></script>
+</body>
+</html>
